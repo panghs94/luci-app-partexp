@@ -1,0 +1,29 @@
+name: Build luci-app-partexp for MT7628
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: luci-app-partexp
+
+      - name: Prepare package directory
+        run: |
+          mkdir -p package
+          mv luci-app-partexp package/luci-app-partexp
+
+      - name: Build IPK
+        uses: openwrt/gh-action-sdk@v6
+        env:
+          ARCH: mipsel_24kc
+          FEEDNAME: packages
+          PACKAGES: luci-app-partexp luci-i18n-partexp-zh-cn
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: partexp-mt7628-ipk
+          path: bin/packages/mipsel_24kc/packages/*.ipk
